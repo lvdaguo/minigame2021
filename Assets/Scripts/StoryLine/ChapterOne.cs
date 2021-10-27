@@ -48,15 +48,10 @@ namespace StoryLine
 
         public void ToRightBackground()
         {
-            if (_rightBackground.activeSelf)
-            {
-                return;
-            }
             _laptop.SetActive(false);
             _diary.SetActive(false);
             _desk.SetActive(false);
 
-            _rightBackground.SetActive(true);
             _deskCamera.SetActive(false);
             _laptopCamera.SetActive(false);
             _drawerCamera.SetActive(false);
@@ -80,7 +75,7 @@ namespace StoryLine
             ToRightBackground();
             _newPlayer.MoveTowards(_deskFront.position, () =>
             {
-                _rightBackground.SetActive(false);
+                // _rightBackground.SetActive(false);
                 _deskCamera.SetActive(true);
                 _laptopCamera.SetActive(false);
                 _drawerCamera.SetActive(false);
@@ -99,7 +94,7 @@ namespace StoryLine
 
             _newPlayer.MoveTowards(_laptopFront.position, () =>
             {
-                _rightBackground.SetActive(false);
+                // _rightBackground.SetActive(false);
                 _deskCamera.SetActive(false);
                 _laptopCamera.SetActive(true);
                 _drawerCamera.SetActive(false);
@@ -118,7 +113,7 @@ namespace StoryLine
 
             _newPlayer.MoveTowards(_drawerFront.position, () =>
             {
-                _rightBackground.SetActive(false);
+                // _rightBackground.SetActive(false);
                 _deskCamera.SetActive(false);
                 _laptopCamera.SetActive(false);
                 _drawerCamera.SetActive(true);
@@ -177,10 +172,6 @@ namespace StoryLine
 
         [SerializeField] private Animator _drawerAnimator;
         
-        private void OnMouseClickEvent(string eventName)
-        {
-        }
-        
         [SerializeField] private AudioClip _incomingChatSound;
         [SerializeField] private AudioClip _heartBeatSound;
         private AudioSource _audioSource;
@@ -190,8 +181,6 @@ namespace StoryLine
             _audioSource = gameObject.AddComponent<AudioSource>();
             _audioSource.loop = false;
             _audioSource.playOnAwake = false;
-            
-            MouseClicker.MouseClickEvent += OnMouseClickEvent;
             
             _phoneUnlockOnce = false;
             _friendZoneEnteredOnce = true;

@@ -8586,6 +8586,7 @@ MonoBehaviour:
   _mergeResultShowTime: 2
   _clientDataRedDot: {fileID: 1986924473}
   _memorandumRedDot: {fileID: 1826959432}
+  _noticeSound: {fileID: 8300000, guid: dabd82b61e334db4789d56cd481da93f, type: 3}
 --- !u!4 &664975899
 Transform:
   m_ObjectHideFlags: 0

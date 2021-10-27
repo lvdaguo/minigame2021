@@ -86,10 +86,18 @@ namespace Iphone
         [SerializeField] private GameObject _clientDataRedDot;
         [SerializeField] private GameObject _memorandumRedDot;
 
+        [SerializeField] private AudioClip _noticeSound;
+        private AudioSource _audioSource;
+        
         public event Action DataCollected = delegate { }; 
         
         private void Start()
         {
+            _audioSource = gameObject.AddComponent<AudioSource>();
+            _audioSource.playOnAwake = false;
+            _audioSource.loop = false;
+            _audioSource.spatialBlend = 0f;
+            
             _iphoneConfigSO = GameConfigProxy.Instance.IphoneConfigSO;
 
             _baseDataProgressBar.fillAmount = 0f;
@@ -151,6 +159,10 @@ namespace Iphone
             
             _collectedData++;
             _baseDataProgressBar.fillAmount = (float) _collectedData / _maxData;
+            if (DingGuaGuaInitializer.Instance == null || DingGuaGuaInitializer.Instance.Working == false)
+            {
+                _audioSource.PlayOneShot(_noticeSound);
+            }
         }
 
         private void UpdateBackgroundProgress()
@@ -185,6 +197,8 @@ namespace Iphone
                 && _keywordCollector.Check(res) == false)
             {
                 _keywordCollector.Collect(res);
+                _audioSource.PlayOneShot(_noticeSound);
+
                 StartCoroutine(ShowMergeResultCo(res));
 
                 // 是否为背景
@@ -318,6 +332,10 @@ namespace Iphone
                         _mergeTryList.Add(keyword);
                     }
                 );
+                if (DingGuaGuaInitializer.Instance == null || DingGuaGuaInitializer.Instance.Working == false)
+                {
+                    _audioSource.PlayOneShot(_noticeSound);
+                }
                 UpdateKeywordCollectProgress();
             }
         }

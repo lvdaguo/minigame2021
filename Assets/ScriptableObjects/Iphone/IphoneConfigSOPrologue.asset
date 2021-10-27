@@ -24,14 +24,5 @@ MonoBehaviour:
   _maxHorizontalChar: 12
   _maxMemePicHeight: 180
   _maxMemePicWidth: 180
-  _thumbnailPictureItems:
-  - _thumbnail: {fileID: 21300000, guid: 7f18600f2b5ed0a4b956280a87bdf3a3, type: 3}
-    _picture: {fileID: 21300000, guid: 7f18600f2b5ed0a4b956280a87bdf3a3, type: 3}
-    _date: 
-  - _thumbnail: {fileID: 21300000, guid: edfcc7eb28658b84c86ac197f8ebca8f, type: 3}
-    _picture: {fileID: 21300000, guid: edfcc7eb28658b84c86ac197f8ebca8f, type: 3}
-    _date: 
-  - _thumbnail: {fileID: 21300000, guid: 6feb23bddf970a047b12dd88c844d540, type: 3}
-    _picture: {fileID: 21300000, guid: 6feb23bddf970a047b12dd88c844d540, type: 3}
-    _date: 
+  _thumbnailPictureItems: []
   _preExistedChatSO: {fileID: 0}
