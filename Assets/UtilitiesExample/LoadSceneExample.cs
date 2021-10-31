@@ -4,7 +4,7 @@ using Utilities; // 引用命名空间
 
 namespace UtilitiesExample
 {
-    public class LoadSceneExample : MonoBehaviour
+    internal class LoadSceneExample : MonoBehaviour
     {
         private void SceneLoaderAPI()
         {

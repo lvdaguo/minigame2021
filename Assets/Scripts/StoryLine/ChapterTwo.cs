@@ -6,6 +6,7 @@ using GameUI;
 using Iphone;
 using Iphone.ChatSystem;
 using Singletons;
+using StaticMethodClass;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -121,20 +122,22 @@ namespace StoryLine
 
         private IEnumerator TalkerInCo(GameObject talker)
         {
-            // yield return talker.GetComponent<RectTransform>()
-            // .DOMoveY(talker)
             _audioSource.PlayOneShot(_openDoorSound);
-            yield return talker.transform
-                .DOMoveY(talker.transform.position.y + _maxMoveDistance, _moveTime)
-                .SetEase(_moveCurve).WaitForCompletion();
+            yield return DO.MoveYCo(talker.transform, 
+                talker.transform.position.y + _maxMoveDistance, _moveTime, _moveCurve);
+            // yield return talker.transform
+            //     .DOMoveY(talker.transform.position.y + _maxMoveDistance, _moveTime)
+            //     .SetEase(_moveCurve).WaitForCompletion();
         }
 
         private IEnumerator TalkerOutCo(GameObject talker)
         {
             _audioSource.PlayOneShot(_openDoorSound);
-            yield return talker.transform
-                .DOMoveY(talker.transform.position.y - _maxMoveDistance, _moveTime)
-                .SetEase(_moveCurve).WaitForCompletion();
+            yield return DO.MoveYCo(talker.transform, 
+                talker.transform.position.y - _maxMoveDistance, _moveTime, _moveCurve);
+            // yield return talker.transform
+            //     .DOMoveY(talker.transform.position.y - _maxMoveDistance, _moveTime)
+            //     .SetEase(_moveCurve).WaitForCompletion();
         }
 
         private void OnChatEventSend(string eventName)
@@ -171,8 +174,6 @@ namespace StoryLine
                 {
                     // 系主任
                     yield return Wait.Seconds(_xiZhuRenDialogueDelay);
-
-                    // _audioSource.PlayOneShot(_openDoorSound);
 
                     yield return StartCoroutine(TalkerInCo(_xiZhuRenTalker));
                     DialoguePlayer.Instance.SendDialogue(_xiZhuRenDialogue);
@@ -403,7 +404,9 @@ namespace StoryLine
                 yield return null;
             }
 
-            _dingBaoBook.transform.GetChild(1).GetComponent<Image>().DOFade(0f, _fadeTime).SetEase(_fadeCurve);
+            StartCoroutine(DO.FadeOutCo(
+                _dingBaoBook.transform.GetChild(1).GetComponent<Image>(), _fadeTime, _fadeCurve));
+            // _dingBaoBook.transform.GetChild(1).GetComponent<Image>().DOFade(0f, _fadeTime).SetEase(_fadeCurve);
             Wait.Delayed(() =>
             {
                 _dingBaoBook.SetActive(false);
@@ -436,8 +439,9 @@ namespace StoryLine
         private IEnumerator Fade(TextMeshProUGUI text)
         {
             text.gameObject.SetActive(true);
-            text.alpha = 0f;
-            yield return text.DOFade(1f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+
+            yield return StartCoroutine(DO.FadeInCo(text, _fadeTime, _fadeCurve));
+                // text.DOFade(1f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
             while (true)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -446,14 +450,25 @@ namespace StoryLine
                 }
                 yield return null;
             }
-            yield return text.DOFade(0f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+            yield return StartCoroutine(DO.FadeOutCo(text, _fadeTime, _fadeCurve));
+            // yield return text.DOFade(0f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+            // yield return text.DOFade(1f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+            // while (true)
+            // {
+            //     if (Input.GetMouseButtonDown(0))
+            //     {
+            //         break;
+            //     }
+            //     yield return null;
+            // }
+            // yield return text.DOFade(0f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
         }
         
         private IEnumerator Fade(Image img)
         {
             img.gameObject.SetActive(true);
-            img.color = new Color(1f, 1f, 1f, 0f);
-            yield return img.DOFade(1f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+
+            yield return DO.FadeInCo(img, _fadeTime, _fadeCurve);
             while (true)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -462,7 +477,19 @@ namespace StoryLine
                 }
                 yield return null;
             }
-            yield return img.DOFade(0f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+            yield return DO.FadeOutCo(img, _fadeTime, _fadeCurve);
+            
+            // img.color = new Color(1f, 1f, 1f, 0f);
+            // yield return img.DOFade(1f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
+            // while (true)
+            // {
+            //     if (Input.GetMouseButtonDown(0))
+            //     {
+            //         break;
+            //     }
+            //     yield return null;
+            // }
+            // yield return img.DOFade(0f, _fadeTime).SetEase(_fadeCurve).WaitForCompletion();
         }
 
         [SerializeField] private GameObject _idCard;
@@ -534,7 +561,7 @@ namespace StoryLine
             StartCoroutine(OnNicePaperFoundCo());
         }
 
-        private bool _found = false;
+        private bool _found;
 
         private IEnumerator OnNicePaperFoundCo()
         {

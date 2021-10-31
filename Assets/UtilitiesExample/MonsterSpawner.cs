@@ -1,15 +1,15 @@
 using System.Collections;
 using UnityEngine;
 using Utilities;
-using Utilities.DataStructures; // 引用命名空间
-
+using Utilities.DataStructures;
+using Utilities.ObjectPool; // 引用命名空间
 
 namespace UtilitiesExample
 {
     /// <summary>
     /// 怪物生成样例
     /// </summary>
-    public class MonsterSpawner : MonoBehaviour
+    internal class MonsterSpawner : MonoBehaviour
     {
         // 鼠标放在函数上看注释
     

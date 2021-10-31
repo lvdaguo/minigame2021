@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using KeywordSystem;
 using Singletons;
+using StaticMethodClass;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -42,7 +43,7 @@ namespace DialogueSystem
         public event Action OptionEnd = delegate { };
 
         public event Action<string> DialogueEvent = delegate { };
-        
+
         private Func<bool> _dialogueContinueCondition;
         private Func<bool> _defaultContinueCondition;
 
@@ -93,7 +94,7 @@ namespace DialogueSystem
             _eventNameSet = new HashSet<string>();
 
             _config = GameConfigProxy.Instance.DialogueSystemConfigSO;
-            
+
             _optionSelected = false;
             _playingDialogue = 0;
 
@@ -199,7 +200,7 @@ namespace DialogueSystem
         public void SwapCameraCanvas()
         {
             _currentValues.Swap(_backupValues);
-            
+
             _dialogueGroup.transform.SetParent(_currentValues.CameraPanel, false);
             _verticalLayoutGroup.padding.left = _currentValues.LeftPadding;
             _verticalLayoutGroup.padding.right = _currentValues.RightPadding;
@@ -217,7 +218,6 @@ namespace DialogueSystem
                 //     bg.rectTransform.localScale = new Vector3(1f, 1f, 1f);
                 // }
             }
-            
         }
 
         private IEnumerator DialogueControlFlowCo()
@@ -242,7 +242,7 @@ namespace DialogueSystem
                 }
             }
         }
-        
+
         private HashSet<string> _eventNameSet;
 
         private bool Check(string eventName)
@@ -264,10 +264,10 @@ namespace DialogueSystem
                 StartCoroutine(DialogueLineDisplayCo(curLine, dialogue));
                 yield return Wait.Seconds(_config.DialogueContinueDisplayInterval);
 
-                _dialogueContinueCondition = 
-                    string.IsNullOrEmpty(dialogue.ContinueEventName) ?
-                    _defaultContinueCondition : 
-                    () => Check(dialogue.ContinueEventName);
+                _dialogueContinueCondition =
+                    string.IsNullOrEmpty(dialogue.ContinueEventName)
+                        ? _defaultContinueCondition
+                        : () => Check(dialogue.ContinueEventName);
 
                 // 等待按下按键
                 while (true)
@@ -337,7 +337,7 @@ namespace DialogueSystem
         {
             _optionSelected = true;
             _dialogueQueue.Enqueue(dialogueDataSO);
-            
+
             if (string.IsNullOrEmpty(eventName) == false)
             {
                 DialogueEvent.Invoke(eventName);
@@ -367,14 +367,10 @@ namespace DialogueSystem
             };
             background.rectTransform.localScale = new Vector3(0f, 0f, 1f);
 
-            // 横向缩放对话框
-            background.rectTransform
-                .DOScaleX(1f, _config.BackgroundScaleXTime)
-                .SetEase(_config.BackgroundScaleXCurve);
-            // 纵向缩放对话框
-            background.rectTransform
-                .DOScaleY(1f, _config.BackgroundScaleYTime)
-                .SetEase(_config.BackgroundScaleYCurve);
+            StartCoroutine(DO.ScaleXCo(background.rectTransform, 1f,
+                _config.BackgroundScaleXTime, _config.BackgroundScaleXCurve));
+            StartCoroutine(DO.ScaleYCo(background.rectTransform, 1f,
+                _config.BackgroundScaleYTime, _config.BackgroundScaleYCurve));
 
             float scaleTime = Mathf.Max
             (
@@ -385,18 +381,16 @@ namespace DialogueSystem
 
             TextShowBegin.Invoke(dialogueIndex);
             // 文字逐渐出现
-            text
-                .DOFade(1f, _config.TextShowTime)
-                .SetEase(_config.TextShowCurve);
+            StartCoroutine(DO.FadeInCo(text, _config.TextShowTime, _config.TextShowCurve));
 
             yield return Wait.Seconds(_config.TextShowTime);
             TextShowEnd.Invoke(dialogueIndex);
-            
+
             if (string.IsNullOrEmpty(dialogue.DialogueEventName) == false)
             {
                 DialogueEvent.Invoke(dialogue.DialogueEventName);
             }
-            
+
             _playingDialogue--;
         }
 
@@ -409,13 +403,13 @@ namespace DialogueSystem
             // 屏幕对话框全部渐渐消失
             for (int i = 0; i < _background.Count; ++i)
             {
-                _background[i]
-                    .DOFade(0f, _config.DialoguePanelFadeOutTime)
-                    .SetEase(_config.DialoguePanelFadeoutCurve);
-
-                _text[i]
-                    .DOFade(0f, _config.DialoguePanelFadeOutTime)
-                    .SetEase(_config.DialoguePanelFadeoutCurve);
+                if (FloatComparison.Equal(_background[i].color.a, 1f))
+                {
+                    StartCoroutine(DO.FadeOutCo(_background[i],
+                        _config.DialoguePanelFadeOutTime, _config.DialoguePanelFadeoutCurve));
+                    StartCoroutine(DO.FadeOutCo(_text[i],
+                        _config.DialoguePanelFadeOutTime, _config.DialoguePanelFadeoutCurve));
+                }
             }
 
             yield return Wait.Seconds(_config.DialoguePanelFadeOutTime);
@@ -429,14 +423,5 @@ namespace DialogueSystem
         {
             _dialogueQueue.Enqueue(dialogueDataSO);
         }
-
-        // /// <summary>
-        // /// 设置对话继续播放的条件，默认为按下任意键继续
-        // /// </summary>
-        // /// <param name="condition"> 判定条件 </param>
-        // public void SetDialogueContinueCondition(Func<bool> condition)
-        // {
-        //     _dialogueContinueCondition = condition;
-        // }
     }
 }

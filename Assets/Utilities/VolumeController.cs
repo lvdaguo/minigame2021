@@ -134,9 +134,9 @@ namespace Utilities
         }
 
         /// <summary> 初始化 </summary>
-        internal static void Init(AudioMixer audioMixer)
+        internal static void Init(UtilInitValues utilInitValues)
         {
-            _audioMixer = audioMixer;
+            _audioMixer = utilInitValues.AudioMixer;
             OptionSaver.SaveEvent += OnSave;
             OptionSaver.LoadEvent += OnLoad;
             _mute = false;

@@ -8,6 +8,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Utilities;
+using Utilities.DataStructures;
+using Utilities.ObjectPool;
 
 namespace KeywordSystem
 {

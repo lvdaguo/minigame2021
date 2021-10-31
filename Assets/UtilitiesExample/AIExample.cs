@@ -6,7 +6,7 @@ namespace UtilitiesExample
     /// <summary>
     /// AI样例
     /// </summary>
-    public class AIExample : MonoBehaviour
+    internal class AIExample : MonoBehaviour
     {
         // 状态机
         private StateMachine<AIExample> _stateMachine;

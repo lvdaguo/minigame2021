@@ -149,7 +149,7 @@ namespace Utilities.DataStructures
         /// <param name="time"> 延迟时间 </param>
         public static void Delayed(Action act, float time)
         {
-            ManagerProxy.Instance.StartCoroutine(DelayedCo(act, time));
+            MonoProxy.Instance.StartCoroutine(DelayedCo(act, time));
         }
 
         /// <summary> 延迟执行某动作实现 </summary>

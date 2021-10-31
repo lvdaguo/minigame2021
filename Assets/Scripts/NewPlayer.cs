@@ -1,12 +1,6 @@
 using System;
-using System.Collections;
-using System.Threading;
-using Constdef;
 using DG.Tweening;
-using Managers.MapManager;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utilities.DataStructures;
 
 

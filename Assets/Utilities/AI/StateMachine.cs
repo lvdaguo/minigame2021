@@ -44,8 +44,8 @@ namespace Utilities.AI
                 return;
             }
             Running = false;
-            ManagerProxy.Instance.UpdateEvent -= OnUpdate;
-            ManagerProxy.Instance.FixedUpdateEvent -= OnFixedUpdate;
+            MonoProxy.Instance.UpdateEvent -= OnUpdate;
+            MonoProxy.Instance.FixedUpdateEvent -= OnFixedUpdate;
         }
 
         /// <summary> 继续状态机 </summary>
@@ -56,8 +56,8 @@ namespace Utilities.AI
                 return;
             }
             Running = true;
-            ManagerProxy.Instance.UpdateEvent += OnUpdate;
-            ManagerProxy.Instance.FixedUpdateEvent += OnFixedUpdate;
+            MonoProxy.Instance.UpdateEvent += OnUpdate;
+            MonoProxy.Instance.FixedUpdateEvent += OnFixedUpdate;
         }
         
         /// <summary> 当前状态 </summary>

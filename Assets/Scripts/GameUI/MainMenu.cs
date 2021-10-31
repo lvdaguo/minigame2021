@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using StaticMethodClass;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -70,15 +71,16 @@ namespace GameUI
 
         private IEnumerator FadeText(TextMeshProUGUI text)
         {
-            yield return text
-                .DOFade(1f, _fadeTime)
-                .SetEase(_fadeCurve)
-                .WaitForCompletion();
-            yield return Wait.Seconds(_textStayTime);
-            yield return text
-                .DOFade(0f, _fadeTime)
-                .SetEase(_fadeCurve)
-                .WaitForCompletion();
+            yield return DO.FadeInOutCo(text, _fadeTime, _textStayTime, _fadeCurve);
+            // yield return text
+            //     .DOFade(1f, _fadeTime)
+            //     .SetEase(_fadeCurve)
+            //     .WaitForCompletion();
+            // yield return Wait.Seconds(_textStayTime);
+            // yield return text
+            //     .DOFade(0f, _fadeTime)
+            //     .SetEase(_fadeCurve)
+            //     .WaitForCompletion();
         }
 
         private IEnumerator StartGameCo()

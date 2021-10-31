@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Singletons;
+using Utilities.DataStructures;
 using Utilities.DesignPatterns;
 
 namespace KeywordSystem

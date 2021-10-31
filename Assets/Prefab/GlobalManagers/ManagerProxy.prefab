@@ -43,8 +43,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ea4670bae246a59ed54c2a82fdcbeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _poolSettings:
-    list: []
-  _audioMixer: {fileID: 24100000, guid: 4753579ec25988f42b283596ad1b8d2f, type: 2}
-  _postProcessGameObject: {fileID: 0}
-  _postProcessResources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  _utilInitValues:
+    _audioMixer: {fileID: 24100000, guid: 4753579ec25988f42b283596ad1b8d2f, type: 2}
+    _objectPoolConfigSO: {fileID: 11400000, guid: 97c9d8120aaf44245afce671f3b9734e, type: 2}

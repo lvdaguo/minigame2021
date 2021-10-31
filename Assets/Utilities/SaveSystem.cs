@@ -12,9 +12,9 @@ namespace Utilities
         private static string _saveFolder;
         
         /// <summary> 初始化 </summary>
-        internal static void Init(string folder)
+        internal static void Init(UtilInitValues utilInitValues)
         {
-            _saveFolder = folder;
+            _saveFolder =utilInitValues.SaveFolder;
         }
         
         /// <summary> 保存对象 </summary>

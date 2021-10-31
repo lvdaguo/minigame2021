@@ -5,7 +5,7 @@ namespace UtilitiesExample
     /// <summary>
     /// 玩家控制器
     /// </summary>
-    public class Player : MonoBehaviour
+    internal class Player : MonoBehaviour
     {
         /// <summary> 速度 </summary>
         [Header("参数设置")] 

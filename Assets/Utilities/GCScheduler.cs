@@ -12,12 +12,14 @@ namespace Utilities
         /// <summary> 是否在垃圾回收 </summary>
         private static bool _cleaning;
         
+        
+        
         /// <summary> 初始化 </summary>
-        internal static void Init()
+        internal static void Init(UtilInitValues utilInitValues)
         {
             _cleaning = false;
             // 场景加载处于预处理阶段时，手动垃圾回收
-            SceneLoader.PreProc += scene => ManagerProxy.Instance.StartCoroutine(CollectGarbageCo());
+            SceneLoader.PreProc += scene => MonoProxy.Instance.StartCoroutine(CollectGarbageCo());
             SceneLoader.PreProcReadyConnect(() => _cleaning == false);
             // 编辑器模式无法更改垃圾回收模式
 #if UNITY_EDITOR == false

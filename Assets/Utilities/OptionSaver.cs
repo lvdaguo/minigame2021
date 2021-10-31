@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 // ReSharper disable PossibleNullReferenceException
 
@@ -10,21 +11,15 @@ namespace Utilities
     public static class OptionSaver
     {
         /// <summary> 保存事件 </summary>
-        public static event Action SaveEvent;
+        public static event Action SaveEvent = delegate {  };
 
         /// <summary> 加载事件 </summary>
-        public static event Action LoadEvent;
+        public static event Action LoadEvent = delegate {  };
 
         /// <summary> 初始化 </summary>
-        internal static void Init()
+        internal static void Init(UtilInitValues utilInitValues)
         {
-            SaveEvent = delegate { };
-            LoadEvent = delegate { };
-        }
-
-        internal static void Begin()
-        {
-            if (PlayerPrefs.HasKey("FirstGame"))
+            if (PlayerPrefs.HasKey("FirstGame") == false)
             {
                 PlayerPrefs.SetInt("FirstGame", 0);
                 Save();

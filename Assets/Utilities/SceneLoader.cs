@@ -6,8 +6,6 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Utilities.DataStructures;
 
-// ReSharper disable PossibleNullReferenceException
-
 namespace Utilities
 {
     /// <summary>
@@ -29,13 +27,13 @@ namespace Utilities
 
 
         /// <summary> 预加载事件 </summary>
-        public static event Action<string> PreLoad;
+        public static event Action<string> PreLoad = delegate { };
 
         /// <summary> 异步预加载事件 </summary>
-        public static event Action<string> PreLoadAsync;
+        public static event Action<string> PreLoadAsync = delegate { };
 
         /// <summary> 异步预加载完成判定 </summary>
-        private static HashSet<Func<bool>> _preLoadReady;
+        private static readonly HashSet<Func<bool>> _preLoadReady = new HashSet<Func<bool>>();
 
         /// <summary> 异步完成判定绑定 </summary>
         /// <param name="ready"> 判定函数 </param>
@@ -52,13 +50,13 @@ namespace Utilities
         }
         
         /// <summary> 预处理事件 </summary>
-        public static event Action<string> PreProc;
+        public static event Action<string> PreProc = delegate { };
 
         /// <summary> 异步预处理事件 </summary>
-        public static event Action<string> PreProcAsync;
+        public static event Action<string> PreProcAsync = delegate { };
 
         /// <summary> 异步预处理完成判定 </summary>
-        private static HashSet<Func<bool>> _preProcReady;
+        private static readonly HashSet<Func<bool>> _preProcReady = new HashSet<Func<bool>>();
         
         /// <summary> 异步完成判定绑定 </summary>
         /// <param name="ready"> 判定函数 </param>
@@ -88,7 +86,7 @@ namespace Utilities
         // Start -- OnDisable -- OnDestroy -- SceneUnloaded
 
         /// <summary> 初始化 </summary>
-        internal static void Init()
+        internal static void Init(UtilInitValues utilInitValues)
         {
             IsLoading = false;
             Progress = 1.0f;
@@ -96,17 +94,8 @@ namespace Utilities
             static void SetProgress(float progress) => Progress = progress;
             ProgressUpdate += SetProgress;
             
-            PreLoad = delegate { };
-            PreProc = delegate { };
-            ProgressUpdate = delegate { };
-            PreProcAsync = delegate { };
-            _preProcReady = new HashSet<Func<bool>>();
-            _preLoadReady = new HashSet<Func<bool>>();
-
             static void ChangeScene(Scene lhs, Scene rhs) => ActiveSceneChanged?.Invoke(lhs, rhs);
-
             static void Loaded(Scene scene, LoadSceneMode mode) => SceneLoaded?.Invoke(scene, mode);
-
             static void Unloaded(Scene scene) => SceneUnloaded?.Invoke(scene);
             
             // 复用SceneManager的事件方法
@@ -154,7 +143,7 @@ namespace Utilities
 #endif
                 return;
             }
-            ManagerProxy.Instance.StartCoroutine(LoadSceneCo(sceneName, reactTime, transitionSceneName));
+            MonoProxy.Instance.StartCoroutine(LoadSceneCo(sceneName, reactTime, transitionSceneName));
         }
         
         /// <summary> 异步加载目标场景实现 </summary>
