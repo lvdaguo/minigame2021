@@ -77,15 +77,13 @@ namespace Utilities.ObjectPool
 
             _poolsMapping.Add(poolSetting.Prefab, poolAgent);
 
-            if (TryOverride(SceneLoader.ActiveScene, poolSetting.Prefab, out PoolSetting preWarmPoolSetting) == false)
-            {
-                preWarmPoolSetting = poolSetting;
-            }
-            PreWarm(preWarmPoolSetting);
+            PreWarm(poolSetting);
         }
 
-        private static void PreWarm(PoolSetting preWarmPoolSetting)
+        private static void PreWarm(PoolSetting defaultPoolSetting)
         {
+            PoolSetting preWarmPoolSetting = TryOverride(SceneLoader.ActiveScene, defaultPoolSetting);
+            
             if (preWarmPoolSetting.ResizeMode == ResizeMode.Sync)
             {
                 Resize(preWarmPoolSetting.Prefab, preWarmPoolSetting.Size);
@@ -99,9 +97,9 @@ namespace Utilities.ObjectPool
 
         private static void OnPreLoad(string sceneName)
         {
-            foreach (KeyValuePair<GameObject, PoolAgent> pair in _poolsMapping)
+            foreach (PoolAgent poolAgent in _poolsMapping.Values)
             {
-                PoolSetting poolSetting = GetPoolSetting(sceneName, pair);
+                PoolSetting poolSetting = TryOverride(sceneName, poolAgent.DefaultPoolSetting);
                 if (poolSetting.ResizeMode == ResizeMode.Sync)
                 {
                     Resize(poolSetting.Prefab, poolSetting.Size);
@@ -117,9 +115,9 @@ namespace Utilities.ObjectPool
         private static IEnumerator OnPreLoadAsyncCo(string sceneName)
         {
             _preLoadAsyncDone = false;
-            foreach (KeyValuePair<GameObject, PoolAgent> pair in _poolsMapping)
+            foreach (PoolAgent poolAgent in _poolsMapping.Values)
             {
-                PoolSetting poolSetting = GetPoolSetting(sceneName, pair);
+                PoolSetting poolSetting = TryOverride(sceneName, poolAgent.DefaultPoolSetting);
                 if (poolSetting.ResizeMode == ResizeMode.Async)
                 {
                     AsyncHandle asyncHandle = ResizeAsync(poolSetting.Prefab, poolSetting.Size, 
@@ -130,30 +128,17 @@ namespace Utilities.ObjectPool
             _preLoadAsyncDone = true;
         }
 
-        private static PoolSetting GetPoolSetting(string sceneName, 
-            KeyValuePair<GameObject, PoolAgent> pair)
+        private static PoolSetting TryOverride(string sceneName, PoolSetting defaultPoolSetting)
         {
-            GameObject prefab = pair.Key;
-            PoolAgent poolAgent = pair.Value;
-            if (TryOverride(sceneName, prefab, out PoolSetting poolSetting) == false)
-            {
-                poolSetting = poolAgent.DefaultPoolSetting;
-            }
-            return poolSetting;
-        }
-
-        private static bool TryOverride(string sceneName, GameObject prefab, out PoolSetting poolSetting)
-        {
-            poolSetting = null;
             if (_sceneOverrideSettingMap.TryGetValue(sceneName, 
                 out Dictionary<GameObject, PoolSetting> prefabPoolSettingMap))
             {
-                if (prefabPoolSettingMap.TryGetValue(prefab, out poolSetting))
+                if (prefabPoolSettingMap.TryGetValue(defaultPoolSetting.Prefab, out PoolSetting overridePoolSetting))
                 {
-                    return true;
+                    return overridePoolSetting;
                 }
             }
-            return false;
+            return defaultPoolSetting;
         }
 
         /// <summary> 获取物体 </summary>
