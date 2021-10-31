@@ -14,10 +14,12 @@ namespace Utilities
 
         [Header("[ObjectPool]")]
         [SerializeField] private ObjectPoolConfigSO _objectPoolConfigSO;
+
+        [SerializeField] private List<GameObject> _globalManagerPrefabList;
         
         public AudioMixer AudioMixer => _audioMixer;
         public ObjectPoolConfigSO ObjectPoolConfigSO => _objectPoolConfigSO;
-
+        public List<GameObject> GlobalManagerPrefabList => _globalManagerPrefabList;
         public string SaveFolder => Application.persistentDataPath;
     }
     
@@ -37,8 +39,6 @@ namespace Utilities
 
         public event Action UpdateEvent = delegate { };
         public event Action FixedUpdateEvent = delegate { };
-        public event Action DestroyEvent = delegate { };
-
         /// <summary> 单例初始化 </summary>
         private void Awake()
         {
@@ -48,6 +48,7 @@ namespace Utilities
                 DontDestroyOnLoad(gameObject);
                 
                 AddToInitDelegate();
+                GenerateGlobalManagers();
             }
             else
             {
@@ -64,13 +65,19 @@ namespace Utilities
             InitDelegate += OptionSaver.Init;
             InitDelegate += ObjectPool.ObjectPool.Init;
         }
+
+        private void GenerateGlobalManagers()
+        {
+            foreach (GameObject globalManager in _utilInitValues.GlobalManagerPrefabList)
+            {
+                Instantiate(globalManager);
+            }
+        }
         
         private void Start() => InitDelegate.Invoke(_utilInitValues);
 
         private void Update() => UpdateEvent.Invoke();
 
         private void FixedUpdate() => FixedUpdateEvent.Invoke();
-
-        private void OnDestroy() => DestroyEvent.Invoke();
     }
 }

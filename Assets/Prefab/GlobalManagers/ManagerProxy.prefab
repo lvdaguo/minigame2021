@@ -46,3 +46,6 @@ MonoBehaviour:
   _utilInitValues:
     _audioMixer: {fileID: 24100000, guid: 4753579ec25988f42b283596ad1b8d2f, type: 2}
     _objectPoolConfigSO: {fileID: 11400000, guid: 97c9d8120aaf44245afce671f3b9734e, type: 2}
+    _globalManagerPrefabList:
+    - {fileID: 5893010003313432514, guid: 435151587870b1049bd5a85fd4cfd611, type: 3}
+    - {fileID: 6467249919408463443, guid: 10ef019abff65c24698b2e1c0f8c1d83, type: 3}

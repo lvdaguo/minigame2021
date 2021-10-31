@@ -33,10 +33,10 @@ namespace Utilities.ObjectPool
 
         private static void ListenToEvents()
         {
-            SceneLoader.PreLoad += OnPreLoad;
-            SceneLoader.PreLoadAsync += OnPreLoadAsync;
+            SceneLoader.PreSceneLoad += OnPreSceneLoad;
+            SceneLoader.PreSceneLoadAsync += OnPreSceneLoadAsync;
             
-            SceneLoader.PreLoadReadyConnect(() => _preLoadAsyncDone);
+            SceneLoader.PreSceneLoadReadyConnect(() => _preLoadAsyncDone);
         }
         
         private static GameObject GeneratePoolRootNode()
@@ -95,7 +95,7 @@ namespace Utilities.ObjectPool
             }
         }
 
-        private static void OnPreLoad(string sceneName)
+        private static void OnPreSceneLoad(string sceneName)
         {
             foreach (PoolAgent poolAgent in _poolsMapping.Values)
             {
@@ -107,7 +107,7 @@ namespace Utilities.ObjectPool
             }
         }
 
-        private static void OnPreLoadAsync(string sceneName)
+        private static void OnPreSceneLoadAsync(string sceneName)
         {
             MonoProxy.Instance.StartCoroutine(OnPreLoadAsyncCo(sceneName));
         }

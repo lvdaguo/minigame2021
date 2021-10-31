@@ -19,8 +19,8 @@ namespace Utilities
         {
             _cleaning = false;
             // 场景加载处于预处理阶段时，手动垃圾回收
-            SceneLoader.PreProc += scene => MonoProxy.Instance.StartCoroutine(CollectGarbageCo());
-            SceneLoader.PreProcReadyConnect(() => _cleaning == false);
+            SceneLoader.AfterSceneLoad += scene => MonoProxy.Instance.StartCoroutine(CollectGarbageCo());
+            SceneLoader.AfterSceneLoadReadyConnect(() => _cleaning == false);
             // 编辑器模式无法更改垃圾回收模式
 #if UNITY_EDITOR == false
             UnityEngine.Scripting.GarbageCollector.GCMode =

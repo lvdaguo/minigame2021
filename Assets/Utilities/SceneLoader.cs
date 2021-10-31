@@ -14,8 +14,8 @@ namespace Utilities
     public static class SceneLoader
     {
         /// <summary> 进度条更新事件 </summary>
-        public static event Action<float> ProgressUpdate;
-        
+        public static event Action<float> ProgressUpdate = delegate { };
+
         /// <summary> 是否正在加载 </summary>
         public static bool IsLoading { get; private set; }
 
@@ -27,60 +27,60 @@ namespace Utilities
 
 
         /// <summary> 预加载事件 </summary>
-        public static event Action<string> PreLoad = delegate { };
+        public static event Action<string> PreSceneLoad = delegate { };
 
         /// <summary> 异步预加载事件 </summary>
-        public static event Action<string> PreLoadAsync = delegate { };
+        public static event Action<string> PreSceneLoadAsync = delegate { };
 
         /// <summary> 异步预加载完成判定 </summary>
         private static readonly HashSet<Func<bool>> _preLoadReady = new HashSet<Func<bool>>();
 
         /// <summary> 异步完成判定绑定 </summary>
         /// <param name="ready"> 判定函数 </param>
-        public static void PreLoadReadyConnect(Func<bool> ready)
+        public static void PreSceneLoadReadyConnect(Func<bool> ready)
         {
             _preLoadReady.Add(ready);
         }
 
         /// <summary> 异步完成判定解绑 </summary>
         /// <param name="ready"> 判定函数 </param>
-        public static void PreLoadReadyDisconnect(Func<bool> ready)
+        public static void PreSceneLoadReadyDisconnect(Func<bool> ready)
         {
             _preLoadReady.Remove(ready);
         }
-        
+
         /// <summary> 预处理事件 </summary>
-        public static event Action<string> PreProc = delegate { };
+        public static event Action<string> AfterSceneLoad = delegate { };
 
         /// <summary> 异步预处理事件 </summary>
-        public static event Action<string> PreProcAsync = delegate { };
+        public static event Action<string> AfterSceneLoadAsync = delegate { };
 
         /// <summary> 异步预处理完成判定 </summary>
         private static readonly HashSet<Func<bool>> _preProcReady = new HashSet<Func<bool>>();
-        
+
         /// <summary> 异步完成判定绑定 </summary>
         /// <param name="ready"> 判定函数 </param>
-        public static void PreProcReadyConnect(Func<bool> ready)
+        public static void AfterSceneLoadReadyConnect(Func<bool> ready)
         {
             _preProcReady.Add(ready);
         }
 
         /// <summary> 异步完成判定解绑 </summary>
         /// <param name="ready"> 判定函数 </param>
-        public static void PreProcReadyDisconnect(Func<bool> ready)
+        public static void AfterSceneLoadReadyDisconnect(Func<bool> ready)
         {
             _preProcReady.Remove(ready);
         }
 
         /// <summary> 当前场景更改事件 </summary>
-        public static event UnityAction<Scene, Scene> ActiveSceneChanged;
+        public static event UnityAction<Scene, Scene> ActiveSceneChanged = delegate { };
 
         /// <summary> 场景加载完毕事件 </summary>
-        public static event UnityAction<Scene, LoadSceneMode> SceneLoaded;
+        public static event UnityAction<Scene, LoadSceneMode> SceneLoaded = delegate { };
 
         /// <summary> 场景卸载完毕事件 </summary>
-        public static event UnityAction<Scene> SceneUnloaded; 
-        
+        public static event UnityAction<Scene> SceneUnloaded = delegate { };
+
         // 生命周期顺序为
         // Awake -- OnEnable -- ActiveSceneChanged -- SceneLoaded
         // Start -- OnDisable -- OnDestroy -- SceneUnloaded
@@ -90,14 +90,15 @@ namespace Utilities
         {
             IsLoading = false;
             Progress = 1.0f;
+
             // 绑定属性的更新
             static void SetProgress(float progress) => Progress = progress;
             ProgressUpdate += SetProgress;
-            
-            static void ChangeScene(Scene lhs, Scene rhs) => ActiveSceneChanged?.Invoke(lhs, rhs);
-            static void Loaded(Scene scene, LoadSceneMode mode) => SceneLoaded?.Invoke(scene, mode);
-            static void Unloaded(Scene scene) => SceneUnloaded?.Invoke(scene);
-            
+
+            static void ChangeScene(Scene lhs, Scene rhs) => ActiveSceneChanged.Invoke(lhs, rhs);
+            static void Loaded(Scene scene, LoadSceneMode mode) => SceneLoaded.Invoke(scene, mode);
+            static void Unloaded(Scene scene) => SceneUnloaded.Invoke(scene);
+
             // 复用SceneManager的事件方法
             SceneManager.activeSceneChanged += ChangeScene;
             SceneManager.sceneLoaded += Loaded;
@@ -107,26 +108,28 @@ namespace Utilities
         /// <summary> 确保预加载全部完成 </summary>
         private static bool PreLoadFinished()
         {
-            foreach(Func<bool> ready in _preLoadReady)
+            foreach (Func<bool> ready in _preLoadReady)
             {
                 if (ready() == false)
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
         /// <summary> 确保预处理全部完成 </summary>
         private static bool PreProcFinished()
         {
-            foreach(Func<bool> ready in _preProcReady)
+            foreach (Func<bool> ready in _preProcReady)
             {
                 if (ready() == false)
                 {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -143,9 +146,10 @@ namespace Utilities
 #endif
                 return;
             }
+
             MonoProxy.Instance.StartCoroutine(LoadSceneCo(sceneName, reactTime, transitionSceneName));
         }
-        
+
         /// <summary> 异步加载目标场景实现 </summary>
         private static IEnumerator LoadSceneCo(string sceneName, float reactTime, string transitionSceneName)
         {
@@ -155,13 +159,13 @@ namespace Utilities
                 // 进入过渡场景
                 SceneManager.LoadScene(transitionSceneName);
             }
-            
+
             // 启动预加载
-            PreLoad(sceneName);
+            PreSceneLoad(sceneName);
             // 启动异步预加载（如有）
             if (_preLoadReady.Count > 0)
             {
-                PreLoadAsync(sceneName);
+                PreSceneLoadAsync(sceneName);
                 while (PreLoadFinished() == false)
                 {
                     yield return null;
@@ -174,7 +178,7 @@ namespace Utilities
             // 启动异步加载
             AsyncOperation info = SceneManager.LoadSceneAsync(sceneName);
             info.allowSceneActivation = false;
-        
+
             // 更新进度条
             while (info.progress < 0.9f)
             {
@@ -184,17 +188,18 @@ namespace Utilities
 
             ProgressUpdate(info.progress);
             // 执行预处理（在预加载完成后）
-            PreProc(sceneName);
-            
+            AfterSceneLoad(sceneName);
+
             // 执行异步预处理
             if (_preProcReady.Count > 0)
             {
-                PreProcAsync(sceneName);
+                AfterSceneLoadAsync(sceneName);
                 while (PreProcFinished() == false)
                 {
                     yield return null;
                 }
             }
+
             // 加载完毕
             ProgressUpdate(1.0f);
 
