@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
+using Utilities.Debugger;
+using Utilities.Enum;
 
 namespace Utilities
 {
@@ -36,7 +38,7 @@ namespace Utilities
         {
             if (File.Exists(_saveFolder + "/" + fileName + ".json") == false)
             {
-                Debug.LogWarning("No path exists");
+                Log.PrintError("不存在此路径", LogSpaceEnum.Utilities);
                 return;
             }
             StreamReader sr = new StreamReader(_saveFolder + "/" + fileName + ".json");

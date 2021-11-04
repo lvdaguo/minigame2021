@@ -44,7 +44,6 @@ public class NewPlayer : MonoBehaviour
         IsFront = Animator.StringToHash("IsFront");
         IsLeft = Animator.StringToHash ("IsLeft");
         IsRight = Animator.StringToHash("IsRight");
-
         _moving = false;
     }
 

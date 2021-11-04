@@ -1,4 +1,4 @@
-﻿namespace Utilities.ObjectPool
+﻿namespace Utilities.Pool
 {
     public enum ResizeMode
     {

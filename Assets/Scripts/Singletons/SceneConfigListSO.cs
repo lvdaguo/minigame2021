@@ -28,7 +28,7 @@ namespace Singletons
         public GameConfig GameConfig => _gameConfig;
     }
     
-    [CreateAssetMenu(fileName = "SceneConfigList", menuName = "Util/Scene Config List")]
+    [CreateAssetMenu(fileName = "SceneConfigList", menuName = "Utilities/Scene Config List")]
     public class SceneConfigListSO : ScriptableObject
     {
         [SerializeField] private List<SceneConfig> _sceneConfigs;

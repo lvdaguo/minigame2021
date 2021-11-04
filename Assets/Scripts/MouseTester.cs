@@ -17,7 +17,7 @@ public class MouseTester : MonoBehaviour
                 bool isCollider = Physics.Raycast(ray, out hit, 1000);
                 if (isCollider)
                 {
-                    Debug.Log(hit.collider.gameObject);
+                    // Debug.Log(hit.collider.gameObject);
                 }
             }
             else

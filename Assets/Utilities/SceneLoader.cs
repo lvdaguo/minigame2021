@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Utilities.DataStructures;
+using Utilities.Debugger;
+using Utilities.Enum;
 
 namespace Utilities
 {
@@ -14,13 +16,13 @@ namespace Utilities
     public static class SceneLoader
     {
         /// <summary> 进度条更新事件 </summary>
-        public static event Action<float> ProgressUpdate = delegate { };
+        public static event Action<float> ProgressUpdate = progress => Progress = progress;
 
         /// <summary> 是否正在加载 </summary>
         public static bool IsLoading { get; private set; }
 
         /// <summary> 加载进度 </summary>
-        public static float Progress { get; private set; }
+        public static float Progress { get; private set; } = 1.0f;
 
         /// <summary> 当前场景 </summary>
         public static string ActiveScene => SceneManager.GetActiveScene().name;
@@ -88,13 +90,6 @@ namespace Utilities
         /// <summary> 初始化 </summary>
         internal static void Init(UtilInitValues utilInitValues)
         {
-            IsLoading = false;
-            Progress = 1.0f;
-
-            // 绑定属性的更新
-            static void SetProgress(float progress) => Progress = progress;
-            ProgressUpdate += SetProgress;
-
             static void ChangeScene(Scene lhs, Scene rhs) => ActiveSceneChanged.Invoke(lhs, rhs);
             static void Loaded(Scene scene, LoadSceneMode mode) => SceneLoaded.Invoke(scene, mode);
             static void Unloaded(Scene scene) => SceneUnloaded.Invoke(scene);
@@ -115,7 +110,6 @@ namespace Utilities
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -129,7 +123,6 @@ namespace Utilities
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -141,12 +134,9 @@ namespace Utilities
         {
             if (IsLoading)
             {
-#if UNITY_EDITOR
-                Debug.LogWarning("已在异步加载场景");
-#endif
+                Log.PrintError("已在加载异步场景", LogSpaceEnum.SceneLoader);
                 return;
             }
-
             MonoProxy.Instance.StartCoroutine(LoadSceneCo(sceneName, reactTime, transitionSceneName));
         }
 
@@ -156,13 +146,12 @@ namespace Utilities
             IsLoading = true;
             if (transitionSceneName != null)
             {
-                // 进入过渡场景
+                Log.Print("加载过渡场景: " + transitionSceneName, LogSpaceEnum.SceneLoader);
                 SceneManager.LoadScene(transitionSceneName);
             }
 
-            // 启动预加载
+            Log.Print("启动预加载", LogSpaceEnum.SceneLoader);
             PreSceneLoad(sceneName);
-            // 启动异步预加载（如有）
             if (_preLoadReady.Count > 0)
             {
                 PreSceneLoadAsync(sceneName);
@@ -171,26 +160,25 @@ namespace Utilities
                     yield return null;
                 }
             }
-
-            // 进度为0
+            Log.Print("预加载完毕", LogSpaceEnum.SceneLoader);
+            
             ProgressUpdate(0.0f);
 
-            // 启动异步加载
+            Log.Print("正式开始异步加载场景" + sceneName, LogSpaceEnum.SceneLoader);
             AsyncOperation info = SceneManager.LoadSceneAsync(sceneName);
             info.allowSceneActivation = false;
 
-            // 更新进度条
             while (info.progress < 0.9f)
             {
                 ProgressUpdate(info.progress);
                 yield return null;
             }
-
+            
             ProgressUpdate(info.progress);
-            // 执行预处理（在预加载完成后）
-            AfterSceneLoad(sceneName);
 
-            // 执行异步预处理
+            Log.Print("启动后加载", LogSpaceEnum.SceneLoader);
+
+            AfterSceneLoad(sceneName);
             if (_preProcReady.Count > 0)
             {
                 AfterSceneLoadAsync(sceneName);
@@ -199,13 +187,13 @@ namespace Utilities
                     yield return null;
                 }
             }
+            
+            Log.Print("后加载完毕", LogSpaceEnum.SceneLoader);
 
-            // 加载完毕
             ProgressUpdate(1.0f);
-
             yield return Wait.Seconds(reactTime);
 
-            // 进入目标场景
+            Log.Print("进入目标场景", LogSpaceEnum.SceneLoader);
             info.allowSceneActivation = true;
 
             IsLoading = false;

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities.DataStructures;
+using Utilities.Debugger;
+using Utilities.Enum;
 
-namespace Utilities.ObjectPool
+namespace Utilities.Pool
 {
     public static class ObjectPool
     {
@@ -41,6 +43,8 @@ namespace Utilities.ObjectPool
         
         private static GameObject GeneratePoolRootNode()
         {
+            Log.Print("生成对象池根结点", LogSpaceEnum.ObjectPool);
+            
             GameObject objectPool = new GameObject {name = "ObjectPool"};
             Object.DontDestroyOnLoad(objectPool);
             return objectPool;
@@ -83,7 +87,8 @@ namespace Utilities.ObjectPool
         private static void PreWarm(PoolSetting defaultPoolSetting)
         {
             PoolSetting preWarmPoolSetting = TryOverride(SceneLoader.ActiveScene, defaultPoolSetting);
-            
+            Log.Print(preWarmPoolSetting.Prefab.name + "对象池启动预热，目标大小为: " + preWarmPoolSetting.Size,
+                LogSpaceEnum.ObjectPool);
             if (preWarmPoolSetting.ResizeMode == ResizeMode.Sync)
             {
                 Resize(preWarmPoolSetting.Prefab, preWarmPoolSetting.Size);

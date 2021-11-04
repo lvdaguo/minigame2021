@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace StaticMethodClass
+namespace Utilities.StaticMethodClass
 {
     public static class FloatComparison
     {

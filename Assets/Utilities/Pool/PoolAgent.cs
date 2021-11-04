@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities.DataStructures;
+using Utilities.Debugger;
+using Utilities.Enum;
+using Object = System.Object;
 
-namespace Utilities.ObjectPool
+namespace Utilities.Pool
 {
     /// <summary>
     /// 对象池代理，自动挂载在GameObject上运行
@@ -58,6 +61,8 @@ namespace Utilities.ObjectPool
         private void GeneratePoolSubRootNode()
         {
             _poolTransform.gameObject.name = _poolSetting.Prefab.name + "Pool";
+            Log.Print("已生成" + _poolSetting.Prefab.name + "对象池代理结点", LogSpaceEnum.ObjectPool);
+            
             // SetActive(false)后Apply对象时不会运行Awake、OnEnable
             _poolSetting.Prefab.SetActive(false);
         }
@@ -96,6 +101,9 @@ namespace Utilities.ObjectPool
 
         internal void BaseResize(int newSize)
         {
+            string message = _poolSetting.Prefab.name + "对象池原大小" + _appliedObjects.Count + "变为" + newSize;
+            Log.Print(message, LogSpaceEnum.ObjectPool);
+            
             while (NeedToExtend(newSize))
             {
                 Extend();
@@ -109,7 +117,11 @@ namespace Utilities.ObjectPool
         private IEnumerator BaseResizeCo(int newSize, int asyncFrames, int objectsPerSlice)
         {
             _inAsyncOperation = true;
-           
+
+            int oldSize = _appliedObjects.Count;
+            string message = _poolSetting.Prefab.name + "对象池开启异步Resize操作，从" + oldSize + "变为" + newSize;
+            Log.Print(message, LogSpaceEnum.ObjectPool);
+
             while (NeedToExtend(newSize))
             {
                 for (int i = 1; i <= objectsPerSlice && _appliedObjects.Count < newSize; ++i)
@@ -127,20 +139,22 @@ namespace Utilities.ObjectPool
                 }
                 yield return Wait.Frames(asyncFrames);
             }
-
+            
+            message = _poolSetting.Prefab.name + "对象池异步Resize完毕，从" + oldSize + "变为" + newSize;
+            Log.Print(message, LogSpaceEnum.ObjectPool);
+            
             AsyncDoneEvent.Invoke();
             _inAsyncOperation = false;
         }
 
         internal AsyncHandle BaseResizeAsync(int newSize, int waitFrames, int objectsPerWait)
         {
-#if UNITY_EDITOR
             if (_inAsyncOperation)
             {
-                Debug.LogWarning("已有异步操作执行，请等待其完成后再进行异步操作请求");
+                Log.PrintError("已有异步操作执行，请等待其完成后再进行异步操作请求", LogSpaceEnum.ObjectPool);
                 return null;
             }
-#endif
+
             AsyncHandle ah = new AsyncHandle(this);
             StartCoroutine(BaseResizeCo(newSize, waitFrames, objectsPerWait));
             return ah;

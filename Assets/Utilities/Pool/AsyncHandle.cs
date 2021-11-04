@@ -1,5 +1,5 @@
 ﻿
-namespace Utilities.ObjectPool
+namespace Utilities.Pool
 {
     /// <summary>
     /// 异步操作句柄

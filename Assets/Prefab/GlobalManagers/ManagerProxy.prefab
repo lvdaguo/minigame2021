@@ -49,3 +49,5 @@ MonoBehaviour:
     _globalManagerPrefabList:
     - {fileID: 5893010003313432514, guid: 435151587870b1049bd5a85fd4cfd611, type: 3}
     - {fileID: 6467249919408463443, guid: 10ef019abff65c24698b2e1c0f8c1d83, type: 3}
+    _logConfigSO: {fileID: 11400000, guid: b38f86cab1b7d9b41bbf6ae24198768d, type: 2}
+    _eventCenterConfigSO: {fileID: 11400000, guid: bbf6882eed3c59842a602e76a2dfdf4f, type: 2}

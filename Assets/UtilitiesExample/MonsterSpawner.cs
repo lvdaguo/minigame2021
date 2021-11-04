@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Utilities;
 using Utilities.DataStructures;
-using Utilities.ObjectPool; // 引用命名空间
+using Utilities.Pool; // 引用命名空间
 
 namespace UtilitiesExample
 {

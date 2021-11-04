@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Utilities.ObjectPool
+namespace Utilities.Pool
 {
     [CreateAssetMenu(fileName = "ObjectPoolConfig", menuName = "Utilities/Object Pool Config")]
     public class ObjectPoolConfigSO : ScriptableObject

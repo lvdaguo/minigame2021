@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using Utilities;
 using Utilities.DataStructures;
 using Utilities.DesignPatterns;
+using Utilities.StaticMethodClass;
 
 namespace DialogueSystem
 {

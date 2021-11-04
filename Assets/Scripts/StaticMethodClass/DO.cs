@@ -3,6 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Utilities.DataStructures;
+using Utilities.StaticMethodClass;
 
 namespace StaticMethodClass
 {

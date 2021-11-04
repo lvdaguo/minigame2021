@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Utilities.AI
 {
     /// <summary>
     /// 有限状态机
     /// </summary>
-    public sealed class StateMachine<T>
+    public sealed class StateMachine<T> where T : MonoBehaviour
     {
         /// <summary> 当前状态 </summary>
         private State<T> _curState;

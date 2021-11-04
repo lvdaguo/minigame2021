@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Utilities.ObjectPool
+namespace Utilities.Pool
 {
     [System.Serializable]
     public class ScenePoolSetting

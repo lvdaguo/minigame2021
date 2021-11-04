@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
+using Utilities.Debugger;
+using Utilities.Enum;
 
 namespace Utilities
 {
@@ -62,13 +64,12 @@ namespace Utilities
             }
             set
             {
-#if UNITY_EDITOR
                 if (value < 0f || value > UpperLimit)
                 {
-                    Debug.LogWarningFormat("非法音量，不在取值范围[0, {0}]内", UpperLimit);
+                    Log.PrintError("非法音量，不在取值范围[0, " + UpperLimit + "]内", LogSpaceEnum.Utilities); 
                     return;
                 }
-#endif
+                
                 if (0f <= value && value < LowerLimit)
                 {
                     value = LowerLimit;
@@ -92,13 +93,12 @@ namespace Utilities
             }
             set
             {
-#if UNITY_EDITOR
                 if (value < 0f || value > UpperLimit)
                 {
-                    Debug.LogWarningFormat("非法音量，不在取值范围[0, {0}]内", UpperLimit);
+                    Log.PrintError("非法音量， 不在取值范围[0, " + UpperLimit + "]内", LogSpaceEnum.Utilities);
                     return;
                 }
-#endif
+
                 if (0f <= value && value < LowerLimit)
                 {
                     value = LowerLimit;
@@ -118,13 +118,12 @@ namespace Utilities
             }
             set
             {
-#if UNITY_EDITOR
                 if (value < 0f || value > UpperLimit)
                 {
-                    Debug.LogWarningFormat("非法音量，不在取值范围[0, {0}]内", UpperLimit);
+                    Log.PrintError("非法音量， 不在取值范围内[0, " + UpperLimit + "]内", LogSpaceEnum.Utilities);
                     return;
                 }
-#endif
+
                 if (0f <= value && value < LowerLimit)
                 {
                     value = LowerLimit;

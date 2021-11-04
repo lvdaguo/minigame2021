@@ -1,28 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
-using Utilities.ObjectPool;
+using Utilities.Debugger;
+using Utilities.Event;
 
 namespace Utilities
 {
-    [Serializable]
-    internal class UtilInitValues
-    {
-        [Header("[VolumeController]")]
-        [SerializeField] private AudioMixer _audioMixer;
-
-        [Header("[ObjectPool]")]
-        [SerializeField] private ObjectPoolConfigSO _objectPoolConfigSO;
-
-        [SerializeField] private List<GameObject> _globalManagerPrefabList;
-        
-        public AudioMixer AudioMixer => _audioMixer;
-        public ObjectPoolConfigSO ObjectPoolConfigSO => _objectPoolConfigSO;
-        public List<GameObject> GlobalManagerPrefabList => _globalManagerPrefabList;
-        public string SaveFolder => Application.persistentDataPath;
-    }
-    
     /// <summary>
     /// 静态管理类的单例代理
     /// 使用SerializeField帮助管理类获取引用
@@ -34,11 +16,12 @@ namespace Utilities
         public static MonoProxy Instance { get; private set; }
 
         [SerializeField] private UtilInitValues _utilInitValues;
-        
+
         internal Action<UtilInitValues> InitDelegate = delegate { }; 
 
         public event Action UpdateEvent = delegate { };
         public event Action FixedUpdateEvent = delegate { };
+        
         /// <summary> 单例初始化 </summary>
         private void Awake()
         {
@@ -58,12 +41,15 @@ namespace Utilities
 
         private void AddToInitDelegate()
         {
+            // 统一初始化
             InitDelegate += SceneLoader.Init;
             InitDelegate += GCScheduler.Init;
             InitDelegate += GraphicOptions.Init;
             InitDelegate += VolumeController.Init;
             InitDelegate += OptionSaver.Init;
-            InitDelegate += ObjectPool.ObjectPool.Init;
+            InitDelegate += Pool.ObjectPool.Init;
+            InitDelegate += Log.Init;
+            InitDelegate += EventCenter.Init;
         }
 
         private void GenerateGlobalManagers()

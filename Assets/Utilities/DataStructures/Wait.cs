@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Utilities.Debugger;
+using Utilities.Enum;
 
 namespace Utilities.DataStructures
 {
@@ -25,25 +27,30 @@ namespace Utilities.DataStructures
         private static WaitForEndOfFrame _endOfFrame;
         
         /// <summary> 等待秒池 </summary>
-        private static readonly Stack<WaitForSecondsRealtimeCustom> _secondsRealtimePool;
+        private static Stack<WaitForSecondsRealtimeCustom> _secondsRealtimePool;
         
         /// <summary> 等待帧池 </summary>
-        private static readonly Stack<WaitForFrames> _framesPool;
+        private static Stack<WaitForFrames> _framesPool;
 
         /// <summary> 等待直到条件池 </summary>
-        private static readonly Stack<WaitUntilCustom> _untilPool;
+        private static Stack<WaitUntilCustom> _untilPool;
 
         /// <summary> 等待当条件池 </summary>
-        private static readonly Stack<WaitWhileCustom> _whilePool;
+        private static Stack<WaitWhileCustom> _whilePool;
         
         /// <summary> 等待秒缓存，固定大小，根据使用频率保留最有可能使用的WaitForSeconds </summary>
-        private static readonly LFUCache<float, WaitForSeconds> _secondsCache;
+        private static LFUCache<float, WaitForSeconds> _secondsCache;
         
         /// <summary> 静态初始化 </summary>
         // 在创建第一个实例或引用任何静态成员之前，将自动调用静态构造函数。
         static Wait()
         {
-            // 初始化Pool
+            InitPool();
+            InitCache();
+        }
+
+        private static void InitPool()
+        {
             if (_disableSecondsRealTimePool == false)
             {
                 _secondsRealtimePool = new Stack<WaitForSecondsRealtimeCustom>(DefaultSize);
@@ -56,8 +63,10 @@ namespace Utilities.DataStructures
             _framesPool = new Stack<WaitForFrames>();
             _untilPool = new Stack<WaitUntilCustom>();
             _whilePool = new Stack<WaitWhileCustom>();
+        }
 
-            // 初始化Cache
+        private static void InitCache()
+        {
             _secondsCache = new LFUCache<float, WaitForSeconds>(DefaultSize);
         }
         
@@ -203,12 +212,11 @@ namespace Utilities.DataStructures
             /// <summary> 重用等待对象 </summary>
             public void Reset(int frames)
             {
-#if UNITY_EDITOR
                 if (frames <= 0)
                 {
-                    Debug.LogError("参数错误，等待帧数为负数或0!");
+                    Log.PrintError("参数错误，等待帧数为负数或0!", LogSpaceEnum.WaitCache);
                 }
-#endif
+                
                 _count = 0;
                 _remainFrames = frames;
             }
@@ -240,12 +248,11 @@ namespace Utilities.DataStructures
             /// <summary> 重用等待对象 </summary>
             public void Reset(Func<bool> predicate)
             {
-#if UNITY_EDITOR
                 if (predicate == null)
                 {
-                    Debug.LogError("错误，条件为空");
+                    Log.PrintError("错误，条件为空", LogSpaceEnum.WaitCache);
                 }
-#endif
+                
                 _predicate = predicate;
             }
 
@@ -274,12 +281,11 @@ namespace Utilities.DataStructures
             /// <summary> 重用等待对象 </summary>
             public void Reset(Func<bool> predicate)
             {
-#if UNITY_EDITOR
                 if (predicate == null)
                 {
-                    Debug.LogError("错误，条件为空");
+                    Log.PrintError("错误， 条件未空", LogSpaceEnum.WaitCache);
                 }
-#endif
+                
                 _predicate = predicate;
             }
 

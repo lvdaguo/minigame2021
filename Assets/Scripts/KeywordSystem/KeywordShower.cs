@@ -7,9 +7,8 @@ using Singletons;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Utilities;
 using Utilities.DataStructures;
-using Utilities.ObjectPool;
+using Utilities.Pool;
 
 namespace KeywordSystem
 {
